@@ -54,13 +54,17 @@ body {
 
 .fade-in { animation: fadeIn 0.35s ease forwards; }
 
-/* ── Responsive helpers ───────────────────────── */
+/* ── Mobile header ────────────────────────────── */
+@media (max-width: 520px) {
+  .badge-text { display: none; }
+  header { height: 56px !important; }
+}
+
 @media (max-width: 768px) {
-  .results-layout  { flex-direction: column !important; }
-  .results-sidebar { width: 100% !important; border-right: none !important; border-bottom: 1px solid var(--border-subtle); }
-  .hero-title      { font-size: 34px !important; }
-  .upload-zone     { padding: 36px 24px !important; }
-  header           { padding: 0 20px !important; }
+  .hero-title      { font-size: clamp(28px, 8vw, 42px) !important; }
+  .upload-zone     { padding: 32px 20px !important; }
   .main-pad        { padding: 24px 16px !important; }
+  .results-layout  { flex-direction: column !important; overflow: auto !important; }
+  .results-sidebar { width: 100% !important; border-right: none !important; border-bottom: 1px solid var(--border-subtle) !important; overflow: visible !important; }
   .results-pad     { padding: 20px 16px !important; }
 }

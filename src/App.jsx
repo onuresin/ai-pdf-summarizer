@@ -138,7 +138,7 @@ function Header({ remaining, lang, setLang, theme, toggleTheme, t }) {
   return (
     <header style={{
       display:"flex", alignItems:"center", justifyContent:"space-between",
-      padding:"0 48px", height:64, flexShrink:0, position:"relative", zIndex:1,
+      padding:"0 clamp(16px, 4vw, 48px)", height:64, flexShrink:0, position:"relative", zIndex:1,
       borderBottom:"1px solid var(--border-subtle)",
     }}>
       {/* Logo */}
@@ -159,7 +159,7 @@ function Header({ remaining, lang, setLang, theme, toggleTheme, t }) {
         {/* Lang toggle */}
         <button onClick={() => setLang(lang === "tr" ? "en" : "tr")}
           style={{display:"flex",alignItems:"center",gap:6,background:"var(--bg-card)",border:"1px solid var(--border-subtle)",borderRadius:20,padding:"5px 14px",cursor:"pointer",color:"var(--text-primary)",fontSize:12,fontWeight:500,transition:"all 0.15s"}}>
-          🌐 {lang === "tr" ? "EN" : "TR"}
+          🌐 {lang.toUpperCase()}
         </button>
 
         {/* Theme toggle */}
@@ -173,9 +173,12 @@ function Header({ remaining, lang, setLang, theme, toggleTheme, t }) {
         </button>
 
         {/* Usage badge */}
-        <div style={{display:"flex",alignItems:"center",gap:8,background:"rgba(139,92,246,0.08)",border:"1px solid rgba(139,92,246,0.18)",borderRadius:20,padding:"5px 14px"}}>
-          <div style={{width:6,height:6,background:remaining > 0 ? "#10b981" : "#ef4444",borderRadius:"50%"}}/>
-          <span style={{fontSize:12,color:"#a78bfa",fontWeight:500}}>{remaining} {t.remainingOps}</span>
+        <div style={{display:"flex",alignItems:"center",gap:6,background:"rgba(139,92,246,0.08)",border:"1px solid rgba(139,92,246,0.18)",borderRadius:20,padding:"5px 12px"}}>
+          <div style={{width:6,height:6,background:remaining > 0 ? "#10b981" : "#ef4444",borderRadius:"50%",flexShrink:0}}/>
+          <span style={{fontSize:12,color:"#a78bfa",fontWeight:500,whiteSpace:"nowrap"}}>
+            {remaining}
+            <span className="badge-text"> {t.remainingOps}</span>
+          </span>
         </div>
       </div>
     </header>
