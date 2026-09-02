@@ -2,7 +2,8 @@ const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-haiku-4-5-20251001";
 const MAX_CHARS = 15000;
 
-const OUTPUT_FORMAT_INSTRUCTIONS = `
+const FORMAT = {
+  tr: `
 Yanıtını KESİNLİKLE aşağıdaki Markdown yapısında ver, başka hiçbir ekleme yapma:
 
 ## 1. Yönetici Özeti
@@ -13,28 +14,50 @@ Yanıtını KESİNLİKLE aşağıdaki Markdown yapısında ver, başka hiçbir e
 
 ## 3. Eylem Maddeleri
 - (varsa somut, yapılabilir aksiyonlar; yoksa "Belirli bir eylem maddesi tespit edilmedi" yaz)
-`.trim();
+`.trim(),
+
+  en: `
+Reply in EXACTLY this Markdown structure, no additional text:
+
+## 1. Executive Summary
+(2-3 sentence high-level summary)
+
+## 2. Key Findings
+- (bullet points, max 6 items)
+
+## 3. Action Items
+- (concrete, actionable steps if any; if none, write "No specific action items identified")
+`.trim(),
+};
+
+const SYSTEM = {
+  tr: "Sen profesyonel bir belge analistisin.",
+  en: "You are a professional document analyst.",
+};
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
-    return res.status(405).json({ error: "Sadece POST istekleri desteklenir." });
+    return res.status(405).json({ error: "Only POST requests are supported." });
   }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
-    console.error("ANTHROPIC_API_KEY tanımlı değil.");
-    return res.status(500).json({ error: "Sunucu yapılandırma hatası." });
+    return res.status(500).json({ error: "Server configuration error." });
   }
 
-  const { text } = req.body || {};
+  const { text, lang = "en" } = req.body || {};
+  const language = lang === "tr" ? "tr" : "en";
 
   if (!text || typeof text !== "string" || !text.trim()) {
-    return res.status(400).json({ error: "Özetlenecek metin boş olamaz." });
+    return res.status(400).json({ error: "Text cannot be empty." });
   }
 
   const safeText = text.slice(0, MAX_CHARS);
-  const systemPrompt = `Sen profesyonel bir belge analistisin. Sana verilen metni analiz edip ${OUTPUT_FORMAT_INSTRUCTIONS}`;
+  const systemPrompt = `${SYSTEM[language]} ${FORMAT[language]}`;
+  const userMsg = language === "tr"
+    ? `Aşağıdaki belge metnini analiz et:\n\n---\n${safeText}\n---`
+    : `Analyze the following document text:\n\n---\n${safeText}\n---`;
 
   try {
     const response = await fetch(ANTHROPIC_API_URL, {
@@ -48,32 +71,30 @@ export default async function handler(req, res) {
         model: MODEL,
         max_tokens: 1024,
         system: systemPrompt,
-        messages: [
-          { role: "user", content: `Aşağıdaki belge metnini analiz et:\n\n---\n${safeText}\n---` },
-        ],
+        messages: [{ role: "user", content: userMsg }],
       }),
     });
 
     if (!response.ok) {
       const errBody = await response.text().catch(() => "");
-      console.error("Anthropic API hatası:", response.status, errBody);
-      return res.status(502).json({ error: "Yapay zeka servisinden yanıt alınamadı." });
+      console.error("Anthropic API error:", response.status, errBody);
+      return res.status(502).json({ error: "AI service error." });
     }
 
     const data = await response.json();
     const summary = data?.content
-      ?.filter((block) => block.type === "text")
-      ?.map((block) => block.text)
+      ?.filter((b) => b.type === "text")
+      ?.map((b) => b.text)
       ?.join("\n")
       ?.trim();
 
     if (!summary) {
-      return res.status(502).json({ error: "Yapay zeka servisi boş yanıt döndürdü." });
+      return res.status(502).json({ error: "AI service returned empty response." });
     }
 
     return res.status(200).json({ summary });
   } catch (err) {
-    console.error("Beklenmeyen sunucu hatası:", err);
-    return res.status(500).json({ error: "Beklenmeyen bir hata oluştu." });
+    console.error("Unexpected error:", err);
+    return res.status(500).json({ error: "Unexpected server error." });
   }
 }

@@ -444,7 +444,7 @@ export default function App() {
       const res = await fetch("/api/summarize", {
         method:"POST",
         headers:{"Content-Type":"application/json"},
-        body: JSON.stringify({ text }),
+        body: JSON.stringify({ text, lang }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
