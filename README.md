@@ -29,7 +29,7 @@
 |--------|-----------------|
 | Dark upload screen with drag-and-drop zone | Results with sidebar metadata and 3 AI-generated cards |
 
-> *Live demo: [your-project.vercel.app](https://your-project.vercel.app)*
+> *Live demo: [ai-pdf-summarizer-lilac.vercel.app](https://ai-pdf-summarizer-lilac.vercel.app)*
 
 ---
 
