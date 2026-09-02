@@ -1,1 +1,66 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+/* ── Theme tokens ─────────────────────────────── */
+:root {
+  --bg-primary:   #08080d;
+  --bg-card:      rgba(255,255,255,0.02);
+  --bg-card-hover:rgba(255,255,255,0.04);
+  --border-subtle: rgba(139,92,246,0.13);
+  --text-primary:  #f1f0ff;
+  --text-secondary:#6b6b8a;
+  --accent:        #7c3aed;
+  --accent-light:  #a78bfa;
+  --glow:          rgba(124,58,237,0.12);
+}
+
+[data-theme="light"] {
+  --bg-primary:    #f5f4ff;
+  --bg-card:       rgba(255,255,255,0.85);
+  --bg-card-hover: rgba(255,255,255,1);
+  --border-subtle: rgba(139,92,246,0.18);
+  --text-primary:  #1a1833;
+  --text-secondary:#5c5880;
+  --accent:        #7c3aed;
+  --accent-light:  #6d28d9;
+  --glow:          rgba(124,58,237,0.07);
+}
+
+/* ── Global reset ─────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scrollbar ────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.25); border-radius: 10px; }
+
+/* ── Animations ───────────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { animation: fadeIn 0.35s ease forwards; }
+
+/* ── Responsive helpers ───────────────────────── */
+@media (max-width: 768px) {
+  .results-layout  { flex-direction: column !important; }
+  .results-sidebar { width: 100% !important; border-right: none !important; border-bottom: 1px solid var(--border-subtle); }
+  .hero-title      { font-size: 34px !important; }
+  .upload-zone     { padding: 36px 24px !important; }
+  header           { padding: 0 20px !important; }
+  .main-pad        { padding: 24px 16px !important; }
+  .results-pad     { padding: 20px 16px !important; }
+}
